@@ -1,21 +1,20 @@
-package info.masterfrog.sandbox.hamiltoniancycle;
+package info.masterfrog.sandbox.hamiltoniancycle.util;
+
+import info.masterfrog.sandbox.hamiltoniancycle.model.Graph;
 
 import java.util.Arrays;
 
-public class HamiltonianCycle {
+public class HamiltonianCycleUtil {
     private int vertexCount, pathCount;
     private int[] path;
     private int[][] graph;
 
-    /**
-     * Function to find cycle
-     **/
     public boolean findHamiltonianCycle(Graph g) {
         vertexCount = g.getVertexCount();
         path = new int[vertexCount];
 
         Arrays.fill(path, -1);
-        graph = g.getGraphMatrix();
+        graph = g.getGraphMatrixClone();
         path[0] = 0;
         pathCount = 1;
         boolean hasSolution = solve(0);
@@ -23,10 +22,10 @@ public class HamiltonianCycle {
         return hasSolution;
     }
 
-    /**
-     * function to find paths recursively
-     **/
-    public boolean solve(int vertex) {
+    private boolean solve(int vertex) {
+        // setup
+        boolean hasSolution = false;
+
         /** solution **/
         if (graph[vertex][0] == 1 && pathCount == vertexCount) {
             return true;
@@ -47,7 +46,11 @@ public class HamiltonianCycle {
 
                 /** if vertex not already selected  solve recursively **/
                 if (!isPresent(v)) {
-                    solve(v);
+                    hasSolution = solve(v);
+
+                    if (hasSolution) {
+                        return true;
+                    }
                 }
 
                 /** restore connection **/
@@ -58,13 +61,10 @@ public class HamiltonianCycle {
             }
         }
 
-        return false;
+        return hasSolution;
     }
 
-    /**
-     * function to check if path is already selected
-     **/
-    public boolean isPresent(int v) {
+    private boolean isPresent(int v) {
         for (int i = 0; i < pathCount - 1; i++)
             if (path[i] == v)
                 return true;
@@ -77,7 +77,7 @@ public class HamiltonianCycle {
             s += "None";
         } else {
             for (int i = 0; i <= vertexCount; i++) {
-                s += path[i] + " ";
+                s += (path[i % vertexCount] + 1) + " ";
             }
         }
 
