@@ -1,0 +1,38 @@
+proc basicLayout: G(V,E)
+
+// define maximums
+maxCrossed = 
+maxIterations = 
+
+// try and generate a layout
+do
+	// weight V
+	for v in V
+		v.weight = count(v.edges)
+
+	// order V by weight
+	for v in V
+		order v
+
+	// position V
+	for v in V
+		randomly position v centered proportionally to weight and semi-uniformly distributed
+
+	// count crossed E
+	for e1 in E
+		for e2 in E
+			if e1 != e2 && isCrossed(e1, e2)
+				crossed{e1,e2} = true
+	iteration++
+while count(crossed) > maxCrossed && iteration < maxIterations
+
+return G(V,E)
+
+proc draw: G(V,E)
+// draw V
+for v in V
+	draw v
+
+// draw E
+for e in E
+	draw E
