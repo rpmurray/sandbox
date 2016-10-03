@@ -14,7 +14,7 @@ public class HamiltonianCycleUtil {
         path = new int[vertexCount];
 
         Arrays.fill(path, -1);
-        graph = g.getGraphMatrixClone();
+        graph = g.getVertexMatrixClone();
         path[0] = 0;
         pathCount = 1;
         boolean hasSolution = solve(0);

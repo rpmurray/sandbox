@@ -4,13 +4,18 @@ package info.masterfrog.sandbox.hamiltoniancycle.main;
  **   Java Program to Implement Hamiltonian Cycle Algorithm
  **/
 
+import info.masterfrog.sandbox.hamiltoniancycle.layout.GraphLayoutManager;
 import info.masterfrog.sandbox.hamiltoniancycle.model.Graph;
+import info.masterfrog.sandbox.hamiltoniancycle.render.GraphRenderer;
 import info.masterfrog.sandbox.hamiltoniancycle.util.HamiltonianCycleUtil;
 import info.masterfrog.sandbox.hamiltoniancycle.util.GraphVertexSequencePermutationGeneratorUtil;
 
+import java.awt.*;
 import java.util.*;
 
 public class DemoMain {
+    private GraphicsPanel graphicsPanel;
+    private GraphRenderer graphRenderer;
     private Scanner scanner;
     private HamiltonianCycleUtil hamiltonianCycleUtil;
     private GraphVertexSequencePermutationGeneratorUtil graphVertexSequencePermutationGeneratorUtil;
@@ -65,9 +70,11 @@ public class DemoMain {
     /*** constructor ***/
 
     public DemoMain() throws Exception {
-        scanner = new Scanner(System.in);
-        hamiltonianCycleUtil = new HamiltonianCycleUtil();
-        graphVertexSequencePermutationGeneratorUtil = new GraphVertexSequencePermutationGeneratorUtil();
+        this.scanner = new Scanner(System.in);
+        this.hamiltonianCycleUtil = new HamiltonianCycleUtil();
+        this.graphVertexSequencePermutationGeneratorUtil = new GraphVertexSequencePermutationGeneratorUtil();
+        this.graphRenderer = new GraphRenderer(5, 50);
+        this.graphicsPanel = new GraphicsPanel(new Rectangle(800, 800), graphRenderer);
     }
 
     /*** constructor end ***/
@@ -112,6 +119,12 @@ public class DemoMain {
 
     private void displayExecutionTime() {
         System.out.println("Execution time: " + String.format("%,.1f", getTimerElapsed()) + "ms");
+    }
+
+    private void drawGraph(Graph g) {
+        GraphLayoutManager.getInstance().generateRandomLayout(g, graphicsPanel.getBounds());
+        graphRenderer.setGraph(g);
+        graphicsPanel.getFrame().repaint();
     }
 
     /*** util end ***/
@@ -212,6 +225,7 @@ public class DemoMain {
             System.out.println("No solution");
         }
         displayExecutionTime();
+        drawGraph(graph);
     }
 
     /*** generate random hamiltonian cycle graph test ***/

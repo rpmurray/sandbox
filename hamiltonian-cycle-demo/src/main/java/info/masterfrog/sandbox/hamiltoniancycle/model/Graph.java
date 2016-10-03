@@ -1,29 +1,31 @@
 package info.masterfrog.sandbox.hamiltoniancycle.model;
 
-import javafx.util.Pair;
-
+import java.awt.*;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 
 public class Graph {
-    private int[][] vertices;
-    private Set<Pair<Integer, Integer>> edges;
+    private int[][] vertexMatrix;
+    private Point[] layout;
+    private Set<Pair<Integer>> edges;
 
     public Graph(int vertexCount) {
-        vertices = new int[vertexCount][vertexCount];
+        vertexMatrix = new int[vertexCount][vertexCount];
+        layout = new Point[vertexCount];
         for (int i = 0; i < vertexCount; i++) {
             for (int j = 0; j < vertexCount; j++) {
-                vertices[i][j] = 0;
+                vertexMatrix[i][j] = 0;
+                layout[i] = new Point();
             }
         }
         edges = new HashSet<>();
     }
 
     /**
-     * Generates a graph by walking a path through all vertices, thereby guaranteeing it has a hamiltonian cycle,
+     * Generates a graph by walking a path through all vertexMatrix, thereby guaranteeing it has a hamiltonian cycle,
      * and padding it with extra edges at random, up to a certain maximum number of extra edges in total
-     * @param vertexCount   number of vertices (size) in the generated graph
+     * @param vertexCount   number of vertexMatrix (size) in the generated graph
      * @param randomWeight  value between 0.0 and 1.0 which determines the likelihood a random edge will be added
      *                      0.5 means 50% of the time it will, 0.0 means never, 1.0 means always
      * @param minExtraEdges minimum number of extra edges to add,
@@ -44,7 +46,7 @@ public class Graph {
         // -1 is a special value, otherwise this should be 0
         int extraEdgesLowerBoundary = -1;
         // the root of this formula defines the most edges we can have total
-        // total edges = 1/2 vertex space size (edges = 2 vertices) - 1/2 diagonals in vertex space (no self referencing edges)
+        // total edges = 1/2 vertex space size (edges = 2 vertexMatrix) - 1/2 diagonals in vertex space (no self referencing edges)
         // further, we can only have vertex count less than that of extra edges,
         // since our deterministic path counts towards the total possible edges
         int extraEdgesUpperBoundary = (int) Math.floor((vertexCount * vertexCount) / 2) - (int) Math.floor(vertexCount / 2) - vertexCount;
@@ -111,35 +113,35 @@ public class Graph {
     }
 
     public void addEdge(int v1, int v2) throws Exception {
-        if (v1 < 0 || v1 > vertices.length) {
+        if (v1 < 0 || v1 > vertexMatrix.length) {
             throw new Exception("vertex 1 out of bounds");
         }
-        if (v2 < 0 || v2 > vertices[v1].length) {
+        if (v2 < 0 || v2 > vertexMatrix[v1].length) {
             throw new Exception("vertex 2 out of bounds");
         }
-        vertices[v1][v2] = 1;
-        vertices[v2][v1] = 1;
+        vertexMatrix[v1][v2] = 1;
+        vertexMatrix[v2][v1] = 1;
         edges.add(new Pair<>(Math.min(v1, v2), Math.max(v1, v2)));
     }
 
     public void removeEdge(int v2, int v1) throws Exception {
-        if (v2 < 0 || v2 > vertices.length) {
+        if (v2 < 0 || v2 > vertexMatrix.length) {
             throw new Exception("vertex 1 out of bounds");
         }
-        if (v1 < 0 || v1 > vertices[v2].length) {
+        if (v1 < 0 || v1 > vertexMatrix[v2].length) {
             throw new Exception("vertex 2 out of bounds");
         }
-        vertices[v2][v1] = 0;
-        vertices[v1][v2] = 0;
+        vertexMatrix[v2][v1] = 0;
+        vertexMatrix[v1][v2] = 0;
         edges.remove(new Pair<>(Math.min(v1, v2), Math.max(v1, v2)));
     }
 
     public int getVertexCount() {
-        return vertices.length;
+        return vertexMatrix.length;
     }
 
     public int[] getVertex(int idx) {
-        return vertices[idx];
+        return vertexMatrix[idx];
     }
 
     public int getEdgeCount() {
@@ -147,12 +149,24 @@ public class Graph {
     }
 
     public boolean hasEdge(int v1, int v2) {
-        return edges.contains(new Pair(Math.min(v1, v2), Math.max(v1, v2)));
+        return edges.contains(new Pair<Integer>(Math.min(v1, v2), Math.max(v1, v2)));
+    }
+
+    public Set<Pair<Integer>> getEdges() {
+        return edges;
+    }
+
+    public Point getVertexLayout(int v) {
+        return layout[v];
+    }
+
+    public void setVertexLayout(int v, Point layout) {
+        this.layout[v] = layout;
     }
 
     // TODO: Hack, remove this!
-    public int[][] getGraphMatrixClone() {
-        return java.util.Arrays.stream(vertices).map(el -> el.clone()).toArray($ -> vertices.clone());
+    public int[][] getVertexMatrixClone() {
+        return java.util.Arrays.stream(vertexMatrix).map(el -> el.clone()).toArray($ -> vertexMatrix.clone());
     }
 
     @Override
@@ -162,19 +176,19 @@ public class Graph {
 
         Graph graph = (Graph) o;
 
-        return Arrays.deepEquals(vertices, graph.vertices);
+        return Arrays.deepEquals(vertexMatrix, graph.vertexMatrix);
     }
 
     @Override
     public int hashCode() {
-        return Arrays.deepHashCode(vertices);
+        return Arrays.deepHashCode(vertexMatrix);
     }
 
 
     public String toSequence() {
         String s = "";
 
-        int[][] vertexSpace = getGraphMatrixClone();
+        int[][] vertexSpace = getVertexMatrixClone();
         for (int i = 0; i < getVertexCount(); i++) {
             for (int j = 0; j < getVertexCount(); j++) {
                 s += String.valueOf(vertexSpace[i][j]);
@@ -201,10 +215,10 @@ public class Graph {
     @Override
     public String toString() {
         String s = "";
-        int spacing = String.valueOf(vertices.length).length();
-        s += "Graph{" + vertices.length + "," + edges.size() + "}:\n";
+        int spacing = String.valueOf(vertexMatrix.length).length();
+        s += "Graph{" + vertexMatrix.length + "," + edges.size() + "}:\n";
         s += "       ";
-        for (int i = 0; i < vertices.length; i++) {
+        for (int i = 0; i < vertexMatrix.length; i++) {
             s += String.format("%-" + spacing + "d", i + 1) + " ";
         }
         s += "\n" + toSimpleString(true);
@@ -214,15 +228,15 @@ public class Graph {
 
     public String toSimpleString(boolean showLabel) {
         String s = "";
-        int spacing = String.valueOf(vertices.length).length();
+        int spacing = String.valueOf(vertexMatrix.length).length();
 
-        for (int i = 0; i < vertices.length; i++) {
+        for (int i = 0; i < vertexMatrix.length; i++) {
             s += "\n";
             if (showLabel) {
                 s += String.format("%-5d  ", i + 1);
             }
-            for (int j = 0; j < vertices[i].length; j++) {
-                s += String.format("%-" + spacing + "d", vertices[i][j]) + " ";
+            for (int j = 0; j < vertexMatrix[i].length; j++) {
+                s += String.format("%-" + spacing + "d", vertexMatrix[i][j]) + " ";
             }
         }
 
