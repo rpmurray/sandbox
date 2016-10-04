@@ -73,7 +73,7 @@ public class DemoMain {
         this.scanner = new Scanner(System.in);
         this.hamiltonianCycleUtil = new HamiltonianCycleUtil();
         this.graphVertexSequencePermutationGeneratorUtil = new GraphVertexSequencePermutationGeneratorUtil();
-        this.graphRenderer = new GraphRenderer(5, 50);
+        this.graphRenderer = new GraphRenderer(5, 20);
         this.graphicsPanel = new GraphicsPanel(new Rectangle(800, 800), graphRenderer);
     }
 
@@ -122,7 +122,7 @@ public class DemoMain {
     }
 
     private void drawGraph(Graph g) {
-        GraphLayoutManager.getInstance().generateRandomLayout(g, graphicsPanel.getBounds());
+        GraphLayoutManager.getInstance().generateRandomGridLayout(g, graphicsPanel.getBounds());
         graphRenderer.setGraph(g);
         graphicsPanel.getFrame().repaint();
     }
