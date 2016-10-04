@@ -1,21 +1,22 @@
 package info.masterfrog.sandbox.hamiltoniancycle.main;
 
-import info.masterfrog.sandbox.hamiltoniancycle.render.GraphRenderer;
+import info.masterfrog.sandbox.hamiltoniancycle.render.RenderingEngine;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
+import java.util.List;
 
 class GraphicsPanel extends JPanel implements KeyListener, MouseListener, MouseMotionListener, MouseWheelListener {
     private JFrame frame; // jframe to put the graphics into
-    private GraphRenderer graphRenderer;
+    private List<RenderingEngine> renderingEngines;
 
-    public GraphicsPanel(Rectangle frameSize, GraphRenderer graphRenderer) {
+    public GraphicsPanel(Rectangle frameSize, List<RenderingEngine> renderingEngines) {
         // handle parent
         super();
 
         // handle local
-        this.graphRenderer = graphRenderer;
+        this.renderingEngines = renderingEngines;
 
         // init
         init(frameSize);
@@ -53,8 +54,17 @@ class GraphicsPanel extends JPanel implements KeyListener, MouseListener, MouseM
     }
 
     public void paintComponent(Graphics graphics) {
+        // setup
+        Graphics2D graphics2D = (Graphics2D) graphics;
+        Rectangle bounds = graphics2D.getClipBounds();
+
+        // clear bounds
+        graphics2D.clearRect(bounds.x, bounds.y, bounds.width, bounds.height);
+
         // render frame
-        graphRenderer.draw((Graphics2D) graphics);
+        for (RenderingEngine renderingEngine : renderingEngines) {
+            renderingEngine.draw((Graphics2D) graphics);
+        }
     }
 
     public void keyPressed(KeyEvent event) {

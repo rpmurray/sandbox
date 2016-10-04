@@ -6,16 +6,18 @@ package info.masterfrog.sandbox.hamiltoniancycle.main;
 
 import info.masterfrog.sandbox.hamiltoniancycle.layout.GraphLayoutManager;
 import info.masterfrog.sandbox.hamiltoniancycle.model.Graph;
-import info.masterfrog.sandbox.hamiltoniancycle.render.GraphRenderer;
+import info.masterfrog.sandbox.hamiltoniancycle.render.GraphRenderingEngine;
+import info.masterfrog.sandbox.hamiltoniancycle.render.RenderingEngine;
 import info.masterfrog.sandbox.hamiltoniancycle.util.HamiltonianCycleUtil;
 import info.masterfrog.sandbox.hamiltoniancycle.util.GraphVertexSequencePermutationGeneratorUtil;
 
 import java.awt.*;
 import java.util.*;
+import java.util.List;
 
-public class DemoMain {
+public class GraphDemoMain {
     private GraphicsPanel graphicsPanel;
-    private GraphRenderer graphRenderer;
+    private GraphRenderingEngine graphRenderingEngine;
     private Scanner scanner;
     private HamiltonianCycleUtil hamiltonianCycleUtil;
     private GraphVertexSequencePermutationGeneratorUtil graphVertexSequencePermutationGeneratorUtil;
@@ -28,7 +30,7 @@ public class DemoMain {
     public static void main(String[] args) {
         try {
             // init
-            DemoMain demoMain = new DemoMain();
+            GraphDemoMain demoMain = new GraphDemoMain();
 
             // startup message
             System.out.println("Hamiltonian Cycle Graph Generator Demo");
@@ -69,12 +71,14 @@ public class DemoMain {
 
     /*** constructor ***/
 
-    public DemoMain() throws Exception {
+    public GraphDemoMain() throws Exception {
         this.scanner = new Scanner(System.in);
         this.hamiltonianCycleUtil = new HamiltonianCycleUtil();
         this.graphVertexSequencePermutationGeneratorUtil = new GraphVertexSequencePermutationGeneratorUtil();
-        this.graphRenderer = new GraphRenderer(5, 20);
-        this.graphicsPanel = new GraphicsPanel(new Rectangle(800, 800), graphRenderer);
+        this.graphRenderingEngine = new GraphRenderingEngine(5, 20);
+        List<RenderingEngine> renderingEngines = new ArrayList<>();
+        renderingEngines.add(graphRenderingEngine);
+        this.graphicsPanel = new GraphicsPanel(new Rectangle(800, 800), renderingEngines);
     }
 
     /*** constructor end ***/
@@ -123,7 +127,7 @@ public class DemoMain {
 
     private void drawGraph(Graph g) {
         GraphLayoutManager.getInstance().generateRandomGridLayout(g, graphicsPanel.getBounds());
-        graphRenderer.setGraph(g);
+        graphRenderingEngine.setGraph(g);
         graphicsPanel.getFrame().repaint();
     }
 
