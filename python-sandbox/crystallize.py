@@ -48,10 +48,13 @@ def crystallize(img, cnt):
     return res
 
 # Open image, crystallize and save
-source = sys.argv[1]
-dest = sys.argv[2]
-count = int(sys.argv[3])
-img  = Image.open(source)
-res = crystallize(np.array(img),count)
-Image.fromarray(res).save(dest)
-
+if len(sys.argv) == 1:
+    print ("\nCrystallize an image.\n\nUsage:\n$> python3 crystallize.py <source file> <crystal count>\n")
+else:
+    source = sys.argv[1]
+    count = int(sys.argv[2])
+    dest = str.join("output.", source)
+    print ("\nSource: ",  source, "\nDestination: ", dest, "\nCrystal Count: ", count, "\n\nCrystallizing image...\n\n", sep="", end="")
+    img  = Image.open(source)
+    res = crystallize(np.array(img),count)
+    Image.fromarray(res).save(dest)
